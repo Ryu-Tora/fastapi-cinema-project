@@ -2,11 +2,11 @@ import os
 
 from fastapi import Depends
 
-from config.settings import TestingSettings, Settings, BaseAppSettings
-from notifications import EmailSenderInterface, EmailSender
-from security.interfaces import JWTAuthManagerInterface
-from security.token_manager import JWTAuthManager
-from storages import S3StorageInterface, S3StorageClient
+from app.config.settings import TestingSettings, Settings, BaseAppSettings
+from app.notifications import EmailSenderInterface, EmailSender
+from app.security.interfaces import JWTAuthManagerInterface
+from app.security.token_manager import JWTAuthManager
+from app.storages import S3StorageInterface, S3StorageClient
 
 
 def get_settings() -> BaseAppSettings:
