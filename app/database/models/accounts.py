@@ -1,14 +1,14 @@
 import enum
 from datetime import datetime, timezone, timedelta, date
-from typing import List, Optional, Text
+from typing import List, Optional
 
 from sqlalchemy import Integer, Enum, String, Boolean, DateTime, func, ForeignKey, UniqueConstraint, Date
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 
-from app.config.database import Base
-from database.validators import accounts as validators
-from security.passwords import hash_password, verify_password
-from security.utils import generate_secure_token
+from app.config.dependencies import Base
+from app.database.validators import accounts as validators
+from app.security.passwords import hash_password, verify_password
+from app.security.utils import generate_secure_token
 
 
 class UserGroupEnum(str, enum.Enum):
@@ -46,24 +46,24 @@ class UserModel(Base):
     group_id: Mapped[int] = mapped_column(ForeignKey("user_groups.id", ondelete="CASCADE"), nullable=False)
     group: Mapped[UserGroupModel] = relationship("UserGroupModel", back_populates="users")
 
-    user_profile: Mapped[Optional["UserProfileModel"]] = relationship("UserProfileModel", back_populates="users", cascade="all, delete-orphan")
+    user_profile: Mapped[Optional["UserProfileModel"]] = relationship("UserProfileModel", back_populates="user", cascade="all, delete-orphan")
 
-    activation_token: Mapped[Optional["ActivationTokenModel"]] = relationship("ActivationTokenModel", back_populates="users", cascade="all, delete-orphan")
+    activation_token: Mapped[Optional["ActivationTokenModel"]] = relationship("ActivationTokenModel", back_populates="user", cascade="all, delete-orphan")
 
-    password_reset_token: Mapped[Optional["PasswordResetTokenModel"]] = relationship("PasswordResetTokenModel", back_populates="users", cascade="all, delete-orphan")
+    password_reset_token: Mapped[Optional["PasswordResetTokenModel"]] = relationship("PasswordResetTokenModel", back_populates="user", cascade="all, delete-orphan")
 
-    refresh_token: Mapped[Optional["RefreshTokenModel"]] = relationship("RefreshTokenModel", back_populates="users", cascade="all, delete-orphan")
+    refresh_token: Mapped[Optional["RefreshTokenModel"]] = relationship("RefreshTokenModel", back_populates="user", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<UserModel {self.id}: {self.email}, {self.is_active}>"
 
     def has_group(self, group_name: UserGroupEnum) -> bool:
-        return self.group_name == group_name
+        return self.group.name == group_name
 
     @classmethod
-    def create(cls, user_data: UserModel) -> "UserModel":
-        user = cls(email=user_data.email, group_id=user_data.group_id)
-        user.password = user_data.password
+    def create(cls, email: str, group_id: int, password: str) -> "UserModel":
+        user = cls(email=email, group_id=group_id)
+        user.password = password
         return user
 
     @property
@@ -95,7 +95,7 @@ class UserProfileModel(Base):
     date_of_birth:Mapped[Optional[date]] = mapped_column(Date)
     info: Mapped[Optional[str]] = mapped_column(String(255))
 
-    user: Mapped[UserModel] = relationship("UserModel", back_populates="profile")
+    user: Mapped[UserModel] = relationship("UserModel", back_populates="user_profile")
 
     __table_args__ = (UniqueConstraint("user_id"),)
 
