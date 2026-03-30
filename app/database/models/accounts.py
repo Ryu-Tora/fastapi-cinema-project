@@ -5,7 +5,7 @@ from typing import List, Optional
 from sqlalchemy import Integer, Enum, String, Boolean, DateTime, func, ForeignKey, UniqueConstraint, Date
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 
-from app.config.dependencies import Base
+from app.database import Base
 from app.database.validators import accounts as validators
 from app.security.passwords import hash_password, verify_password
 from app.security.utils import generate_secure_token
