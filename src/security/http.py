@@ -1,30 +1,21 @@
-class BaseS3Error(Exception):
-    def __init__(self, message=None):
-        if message is None:
-            message = "An S3 storage error occurred."
-        super().__init__(message)
+from fastapi import Request, HTTPException, status
 
 
-class S3ConnectionError(BaseS3Error):
-    def __init__(self, message="Failed to connect to S3 storage."):
-        super().__init__(message)
+def get_token(request: Request) -> str:
+    authorization: str = request.headers.get("Authorization")
 
+    if not authorization:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authorization header is missing"
+        )
 
-class S3BucketNotFoundError(BaseS3Error):
-    def __init__(self, message="S3 bucket not found."):
-        super().__init__(message)
+    scheme, _, token = authorization.partition(" ")
 
+    if scheme.lower() != "bearer" or not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid Authorization header format. Expected 'Bearer <token>'"
+        )
 
-class S3FileUploadError(BaseS3Error):
-    def __init__(self, message="Failed to upload file to S3."):
-        super().__init__(message)
-
-
-class S3FileNotFoundError(BaseS3Error):
-    def __init__(self, message="Requested file not found in S3."):
-        super().__init__(message)
-
-
-class S3PermissionError(BaseS3Error):
-    def __init__(self, message="Insufficient permissions to access S3 resource."):
-        super().__init__(message)
+    return token
