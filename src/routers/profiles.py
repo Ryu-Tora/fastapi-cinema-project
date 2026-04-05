@@ -14,7 +14,7 @@ from database.models.accounts import (
     UserGroupModel,
     UserGroupEnum,
 )
-from exceptions import BaseSecurityError, S3FileUploadError
+from exceptions.storage import BaseSecurityError, S3FileUploadError
 from schemas.profiles import ProfileCreateSchema, ProfileResponseSchema
 from security.interfaces import JWTAuthManagerInterface
 from security.http import get_token

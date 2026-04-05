@@ -22,8 +22,8 @@ from database import (
     PasswordResetTokenModel,
     RefreshTokenModel,
 )
-from exceptions import BaseSecurityError
-from notifications import EmailSenderInterface
+from exceptions.security import BaseSecurityError
+from notifications.emails import EmailSenderInterface
 from schemas import (
     UserRegistrationRequestSchema,
     UserRegistrationResponseSchema,
