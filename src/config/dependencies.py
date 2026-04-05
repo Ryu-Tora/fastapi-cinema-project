@@ -2,12 +2,12 @@ import os
 
 from fastapi import Depends
 
-from app.config.settings import TestingSettings, Settings, BaseAppSettings
-from app.notifications.interfaces import EmailSenderInterface
-from app.notifications.emails import EmailSender
-from app.security.interfaces import JWTAuthManagerInterface
-from app.security.token_manager import JWTAuthManager
-from app.storages import S3StorageInterface, S3StorageClient
+from src.config.settings import TestingSettings, Settings, BaseAppSettings
+from src.notifications.interfaces import EmailSenderInterface
+from src.notifications.emails import EmailSender
+from src.security.interfaces import JWTAuthManagerInterface
+from src.security.token_manager import JWTAuthManager
+from src.storages import S3StorageInterface, S3StorageClient
 
 
 def get_settings() -> BaseAppSettings:
@@ -17,16 +17,18 @@ def get_settings() -> BaseAppSettings:
     return Settings()
 
 
-def get_jwt_auth_manager(settings: BaseAppSettings = Depends(get_settings)) -> JWTAuthManagerInterface:
+def get_jwt_auth_manager(
+    settings: BaseAppSettings = Depends(get_settings),
+) -> JWTAuthManagerInterface:
     return JWTAuthManager(
         secret_key_access=settings.SECRET_KEY_ACCESS,
         secret_key_refresh=settings.SECRET_KEY_REFRESH,
-        algorithm=settings.JWT_SIGNING_ALGORITHM
+        algorithm=settings.JWT_SIGNING_ALGORITHM,
     )
 
 
 def get_accounts_email_notificator(
-    settings: BaseAppSettings = Depends(get_settings)
+    settings: BaseAppSettings = Depends(get_settings),
 ) -> EmailSenderInterface:
     return EmailSender(
         hostname=settings.EMAIL_HOST,
@@ -38,16 +40,16 @@ def get_accounts_email_notificator(
         activation_email_template_name=settings.ACTIVATION_EMAIL_TEMPLATE_NAME,
         activation_complete_email_template_name=settings.ACTIVATION_COMPLETE_EMAIL_TEMPLATE_NAME,
         password_email_template_name=settings.PASSWORD_RESET_TEMPLATE_NAME,
-        password_complete_email_template_name=settings.PASSWORD_RESET_COMPLETE_TEMPLATE_NAME
+        password_complete_email_template_name=settings.PASSWORD_RESET_COMPLETE_TEMPLATE_NAME,
     )
 
 
 def get_s3_storage_client(
-    settings: BaseAppSettings = Depends(get_settings)
+    settings: BaseAppSettings = Depends(get_settings),
 ) -> S3StorageInterface:
     return S3StorageClient(
         endpoint_url=settings.S3_STORAGE_ENDPOINT,
         access_key=settings.S3_STORAGE_ACCESS_KEY,
         secret_key=settings.S3_STORAGE_SECRET_KEY,
-        bucket_name=settings.S3_BUCKET_NAME
+        bucket_name=settings.S3_BUCKET_NAME,
     )
