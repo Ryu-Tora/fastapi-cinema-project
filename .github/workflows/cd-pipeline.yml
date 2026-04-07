@@ -1,4 +1,3 @@
-"""
 name: Deploy to AWS EC2
 
 on:
@@ -32,4 +31,3 @@ jobs:
         run: |
           ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
                 'bash /home/ubuntu/src/fastapi-cinema-project/commands/deploy.sh'
-"""
